@@ -26,14 +26,14 @@ Once you have a middleware manager, you can add layers of middleware by calling 
 ```js
 /**
  * Add a middleware layer that is associated with no key.
- * /
+ */
 middleware.use((value, next) => {
     next(value);
 });
 
 /**
  * Add a middleware layer that is associated with a key.
- * /
+ */
 middleware.use('route', (request, reponse, next) => {
 	next(request, response);
 })
@@ -41,7 +41,7 @@ middleware.use('route', (request, reponse, next) => {
 /**
  * Add a middleware layer containing a set of handlers associated
  * with different keys.
- * /
+ */
 middleware.use({
 
     open: (next) => {
