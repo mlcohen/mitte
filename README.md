@@ -23,7 +23,7 @@ const middleware = mitte();
 
 Once you have a middleware manager, you can add layers of middleware by calling the manager's `use` method in a variety of ways:
 
-```
+```js
 /**
  * Add a middleware layer that is associated with no key.
  * /
