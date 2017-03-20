@@ -17,8 +17,8 @@
     "build:es": "BABEL_ENV=es babel src --out-dir es",
     "build:umd": "BABEL_ENV=es NODE_ENV=development webpack",
     "lint": "eslint src test build",
-    "test": "BABEL_ENV=commonjs mocha -r babel-register -r ./test/helpers/setup.js test/*.spec.js",
-    "test:cov": "BABEL_ENV=commonjs istanbul cover _mocha -- -r babel-register -r ./test/helpers/setup.js test/*.spec.js"
+    "test": "BABEL_ENV=commonjs mocha -r babel-register -r ./test/helpers/setup.js test/**/*.spec.js",
+    "test:cov": "BABEL_ENV=commonjs istanbul cover _mocha -- -r babel-register -r ./test/helpers/setup.js test/**/*.spec.js"
   },
   "repository": {
     "type": "git",
