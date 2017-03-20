@@ -12,12 +12,13 @@
   ],
   "scripts": {
     "clean": "rimraf lib es dist",
-    "build": "yarn run build:commonjs && yarn run build:es",
+    "build": "npm run build:commonjs && npm run build:es",
     "build:commonjs": "BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "BABEL_ENV=es babel src --out-dir es",
     "build:umd": "BABEL_ENV=es NODE_ENV=development webpack",
     "lint": "eslint src test build",
-    "test": "BABEL_ENV=commonjs mocha -r babel-register -r ./test/helpers/setup.js test/*.spec.js"
+    "test": "BABEL_ENV=commonjs mocha -r babel-register -r ./test/helpers/setup.js test/*.spec.js",
+    "test:cov": "BABEL_ENV=commonjs istanbul cover _mocha -- -r babel-register -r ./test/helpers/setup.js test/*.spec.js"
   },
   "repository": {
     "type": "git",
@@ -61,6 +62,7 @@
     "babel-register": "^6.24.0",
     "chai": "^3.5.0",
     "eslint": "^3.17.1",
+    "istanbul": "v1.1.0-alpha.1",
     "mocha": "^3.2.0",
     "rimraf": "^2.6.1",
     "webpack": "^2.2.1"
