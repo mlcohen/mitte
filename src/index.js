@@ -44,14 +44,14 @@ function tryRunningMiddlewareLayer (layer, context, args, next, handler) {
     }
 }
 
-function processMittewareRunArguments (args) {
+function processRunArguments (args) {
     const len = args.length;
     const args_ = args.slice(0, len - 1);
     const handler = args[len - 1];
     return [args_, handler];
 }
 
-function normalizeMittewareUseArguments (args) {
+function normalizeUseArguments (args) {
     if (args.length === 1) {
         return isArray(args) ? args: [args[0]];
     }
@@ -77,19 +77,19 @@ const Mitte = function () {
 };
 
 Mitte.prototype.use = function use (...args) {
-    const middleware = normalizeMittewareUseArguments(args);
+    const middleware = normalizeUseArguments(args);
     this._middleware = this._middleware.concat(middleware);
 
     return this;
 };
 
 Mitte.prototype.run = function run (...args) {
-    const [args_, handler] = processMittewareRunArguments(args);
+    const [args_, handler] = processRunArguments(args);
     runMiddleware(this._middleware, null, 0, args_, handler);
 };
 
 Mitte.prototype.runForKey = function runForKey (key, ...args) {
-    const [args_, handler] = processMittewareRunArguments(args);
+    const [args_, handler] = processRunArguments(args);
     runMiddleware(this._middleware, key, 0, args_, handler);
 };
 
