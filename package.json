@@ -17,9 +17,7 @@
     "build:es": "BABEL_ENV=es babel src --out-dir es",
     "build:umd": "BABEL_ENV=es NODE_ENV=development webpack",
     "lint": "eslint src test build",
-    "test": "BABEL_ENV=commonjs jest test",
-    "test:watch": "yarn test -- --watch",
-    "test:cov": "yarn test -- --coverage"
+    "test": "BABEL_ENV=commonjs mocha -r babel-register -r ./test/helpers/setup.js test/*.spec.js"
   },
   "repository": {
     "type": "git",
@@ -37,7 +35,6 @@
   "devDependencies": {
     "babel-cli": "^6.23.0",
     "babel-core": "^6.23.1",
-    "babel-jest": "^19.0.0",
     "babel-loader": "^6.4.0",
     "babel-plugin-check-es2015-constants": "^6.22.0",
     "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",
@@ -61,8 +58,10 @@
     "babel-plugin-transform-es3-property-literals": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-es2015": "^6.22.0",
+    "babel-register": "^6.24.0",
+    "chai": "^3.5.0",
     "eslint": "^3.17.1",
-    "jest": "^19.0.2",
+    "mocha": "^3.2.0",
     "rimraf": "^2.6.1",
     "webpack": "^2.2.1"
   },
