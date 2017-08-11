@@ -54,4 +54,4 @@ function createMiddleware () {
 
 export {
     createMiddleware
-}
+};
