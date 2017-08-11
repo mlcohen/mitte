@@ -1,25 +1,19 @@
-import isString from 'lodash/isString';
 import isFunction from 'lodash/isFunction';
 import isArray from 'lodash/isArray';
 
-function runMiddleware (middleware, index, key, args, handler) {
-    const layer = middleware[index];
+function applyMiddlewareLayers (layers, index, key, args, handler) {
+    const layer = layers[index];
 
     if (!layer) {
         if (handler) {
-            handler.apply(null, [null, ...args]);
+            handler.apply(null, args);
         }
         return;
     }
 
-    const next = (...args) => {
-        if (args.length === 1 && args[0] instanceof Error) {
-            handler.call(null, args[0]);
-            return;
-        }
-
-        runMiddleware(middleware, index + 1, key, args, handler);
-    };
+    function next (...args) {
+        applyMiddlewareLayers(layers, index + 1, key, args, handler);
+    }
 
     if (key) {
         const method = layer[key];
@@ -27,76 +21,37 @@ function runMiddleware (middleware, index, key, args, handler) {
         if (!method) {
             next.apply(null, args);
         } else {
-            tryRunningMiddlewareLayer(method, layer, args, next, handler);
+            method.apply(layer, [...args, next]);
         }
     } else if (isFunction(layer)) {
-        tryRunningMiddlewareLayer(layer, null, args, next, handler);
+        layer.apply(null, [...args, next]);
     } else {
         next.apply(null, args);
     }
 }
 
-function tryRunningMiddlewareLayer (layer, context, args, next, handler) {
-    try {
-        layer.apply(context, [...args, next]);
-    } catch (err) {
-        handler.apply(null, [err]);
-    }
-}
-
-function processRunArguments (args) {
-    const len = args.length;
-    const args_ = args.slice(0, len - 1);
-    const handler = args[len - 1];
-    return [args_, handler];
-}
-
-function normalizeUseArguments (args) {
-    if (args.length === 1) {
-        return isArray(args) ? args: [args[0]];
-    }
-
-    if (args.length >= 2) {
-        const key = args[0];
-        const middleware = args[1];
-
-        if (!isString(key)) {
-            throw new Error('Invalid Argument: Key must be a string');
-        }
-
-        return (isArray(middleware) ? middleware : [middleware]).map(layer => ({
-            [key]: layer
-        }));
-    }
-
-    return [];
-}
-
-const Mitte = function () {
-    this._middleware = [];
+const Middleware = function () {
+    this._layers = [];
 };
 
-Mitte.prototype.use = function use (...args) {
-    const middleware = normalizeUseArguments(args);
-    this._middleware = this._middleware.concat(middleware);
-
+Middleware.prototype.use = function use (...args) {
+    const layers = isArray(args[0]) ? args[0] : args;
+    this._layers = this._layers.concat(layers);
     return this;
 };
 
-Mitte.prototype.run = function run (...args) {
-    const [args_, handler] = processRunArguments(args);
-    runMiddleware(this._middleware, null, 0, args_, handler);
+Middleware.prototype.apply = function apply (args, handler) {
+    applyMiddlewareLayers(this._layers, 0, null, args, handler);
 };
 
-Mitte.prototype.runForKey = function runForKey (key, ...args) {
-    const [args_, handler] = processRunArguments(args);
-    runMiddleware(this._middleware, key, 0, args_, handler);
+Middleware.prototype.applyForKey = function applyForKey (key, args, handler) {
+    applyMiddlewareLayers(this._layers, 0, key, args, handler);
 };
 
-function mitte () {
-    return new Mitte();
+function createMiddleware () {
+    return new Middleware();
 }
 
 export {
-    mitte,
-};
+    createMiddleware
+}
