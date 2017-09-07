@@ -30,6 +30,43 @@ function applyMiddlewareLayers (layers, index, key, args, handler) {
     }
 }
 
+function applyMiddlewareLayersAsync (layers, index, key, args) {
+    return new Promise((resolve, reject) => {
+        const layer = layers[index];
+
+        if (!layer) {
+            resolve({
+                applyNextLayer: false,
+                args: args
+            });
+            return;
+        }
+
+        function next (...args) {
+            resolve({
+                applyNextLayer: true,
+                args: [layers, index + 1, key, args]
+            });
+        }
+
+        if (key) {
+            const method = layer[key];
+
+            if (!method) {
+                next.apply(null, args);
+            } else {
+                method.apply(layer, [...args, next, reject]);
+            }
+        } else if (isFunction(layer)) {
+            layer.apply(null, [...args, next, reject]);
+        } else {
+            next.apply(null, args);
+        }
+    }).then(({ applyNextLayer, args }) =>
+        applyNextLayer ? applyMiddlewareLayersAsync.apply(null, args) : args
+    );
+}
+
 const Middleware = function () {
     this._layers = [];
 };
@@ -44,8 +81,16 @@ Middleware.prototype.apply = function apply (args, handler) {
     applyMiddlewareLayers(this._layers, 0, null, args, handler);
 };
 
+Middleware.prototype.applyAsync = function applyAsync (args) {
+    return applyMiddlewareLayersAsync(this._layers, 0, null, args);
+};
+
 Middleware.prototype.applyForKey = function applyForKey (key, args, handler) {
     applyMiddlewareLayers(this._layers, 0, key, args, handler);
+};
+
+Middleware.prototype.applyForKeyAsync = function applyForKeyAsync (key, args) {
+    return applyMiddlewareLayersAsync(this._layers, 0, key, args);
 };
 
 function createMiddleware () {

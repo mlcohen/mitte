@@ -1,28 +1,12 @@
 import { createMiddleware } from '../src/index';
-import isFunction from 'lodash/isFunction';
 
-describe('mitte', function () {
-
-    it('Exposes public API', () => {
-        const middleware = createMiddleware();
-
-        expect(isFunction(middleware.use)).to.be.true;
-        expect(isFunction(middleware.apply)).to.be.true;
-        expect(isFunction(middleware.applyForKey)).to.be.true;
-    });
-
-    it('Creates new middleware instances', () => {
-        const instance1 = createMiddleware();
-        const instance2 = createMiddleware();
-
-        expect(instance1).to.not.equal(instance2);
-    });
+describe('sync', function () {
 
     describe('With no middleware layers', () => {
 
         it('will not throw errors when apply methods are called', () => {
             const middleware = createMiddleware();
-            
+
             middleware.apply(['foo', 'bar']);
             middleware.applyForKey('test', ['foo', 'bar']);
 

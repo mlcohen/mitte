@@ -12,3 +12,6 @@ parserOptions:
 rules:
     indent: [error, 4]
     semi: [error, always]
+
+globals:
+    Promise: true
